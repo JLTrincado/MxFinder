@@ -96,13 +96,13 @@ def check_all_possible_paths_aux(matrix, paths_list, local_path, pos):
 def main():
     try:
 
-        bed_path = sys.argv[1]
-        fasta_path = sys.argv[2]
-        output_path = sys.argv[3]
+        # bed_path = sys.argv[1]
+        # fasta_path = sys.argv[2]
+        # output_path = sys.argv[3]
 
-        # bed_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_exons_hg19_refseq_TEST.bed"
-        # fasta_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_exons_hg19_refseq_TEST.bed.fa"
-        # output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_possible_transcripts_refseq_TEST.fa"
+        bed_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed"
+        fasta_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed.fa"
+        output_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_possible_transcripts_refseq.fa"
 
         # exon_stop_coords = exon_stop.split("-")
 
@@ -162,6 +162,7 @@ def main():
                     sequence = ""
                     header_flag = False
                 i += 1
+        exons_sequence[header_id] = sequence
 
         # 3. Build the connection matrix
         width = len(exons_list_sorted)

@@ -163,6 +163,7 @@ def main():
                     sequence = ""
                     header_flag = False
                 i += 1
+        exons_sequence[header_id] = sequence
 
         # 3. Build the connection matrix
         width = len(exons_list_sorted)
