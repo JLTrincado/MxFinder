@@ -124,6 +124,11 @@ def main():
                 else:
                     transcripts_dict[transcript].append([tokens[1], tokens[2]])
 
+        # If there is only 1 transcript, stop the execution.
+        # Raise an ERROR exception (we are interested in cases with various transcripts)
+        if (len(transcripts_dict) != 1):
+            raise Exception("Only 1 transcript associated to this gene. Stop execution.")
+
         # Sort the list of exons
         exons_list_sorted = sorted(exons_list, key=lambda x: (x[1], x[0]))
         # Get the position of the exon_stop in exons_list_sorted

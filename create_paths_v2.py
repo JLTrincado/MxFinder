@@ -96,13 +96,13 @@ def check_all_possible_paths_aux(matrix, paths_list, local_path, pos):
 def main():
     try:
 
-        # bed_path = sys.argv[1]
-        # fasta_path = sys.argv[2]
-        # output_path = sys.argv[3]
+        bed_path = sys.argv[1]
+        fasta_path = sys.argv[2]
+        output_path = sys.argv[3]
 
-        bed_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed"
-        fasta_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed.fa"
-        output_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_possible_transcripts_refseq.fa"
+        # bed_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed"
+        # fasta_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed.fa"
+        # output_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_possible_transcripts_refseq.fa"
 
         # exon_stop_coords = exon_stop.split("-")
 
@@ -122,6 +122,11 @@ def main():
                     transcripts_dict[transcript] = [[tokens[1],tokens[2]]]
                 else:
                     transcripts_dict[transcript].append([tokens[1], tokens[2]])
+
+        # If there is only 1 transcript, stop the execution.
+        # Raise an ERROR exception (we are interested in cases with various transcripts)
+        if(len(transcripts_dict)!=1):
+            raise Exception("Only 1 transcript associated to this gene. Stop execution.")
 
         # Sort the list of exons
         exons_list_sorted = sorted(exons_list, key=lambda x: (x[1], x[0]))
