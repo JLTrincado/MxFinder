@@ -125,7 +125,7 @@ def main():
 
         # If there is only 1 transcript, stop the execution.
         # Raise an ERROR exception (we are interested in cases with various transcripts)
-        if(len(transcripts_dict)!=1):
+        if(len(transcripts_dict)==1):
             raise Exception("Only 1 transcript associated to this gene. Stop execution.")
 
         # Sort the list of exons
