@@ -100,9 +100,9 @@ def main():
         fasta_path = sys.argv[2]
         output_path = sys.argv[3]
 
-        # bed_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed"
-        # fasta_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_exons.bed.fa"
-        # output_path = "/home/shinoda/Desktop/Florida/annotation/A1BG_possible_transcripts_refseq.fa"
+        # bed_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_exons_hg19_refseq.bed"
+        # fasta_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_exons_hg19_refseq.bed.fa"
+        # output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_transcripts_refseq_REVERSE.fa"
 
         # exon_stop_coords = exon_stop.split("-")
 
@@ -114,6 +114,7 @@ def main():
             for line in f:
                 tokens = line.rstrip().split("\t")
                 chr = tokens[0]
+                strand = tokens[5]
                 # Save the cordinates in the list
                 if([tokens[1],tokens[2]] not in exons_list):
                     exons_list.append([tokens[1],tokens[2]])
@@ -129,13 +130,22 @@ def main():
             raise Exception("Only 1 transcript associated to this gene. Stop execution.")
 
         # Sort the list of exons
-        exons_list_sorted = sorted(exons_list, key=lambda x: (x[1], x[0]))
-        # # Get the position of the exon_stop in exons_list_sorted
+        # Depending on the strand, we have to sort it in a different way
+        if(strand=="+"):
+            exons_list_sorted = sorted(exons_list, key=lambda x: (x[1], x[0]))
+        else:
+            exons_list_sorted = sorted(exons_list,key=lambda x: (x[1], x[0]), reverse = True)
+
+        # Get the position of the exon_stop in exons_list_sorted
         # exon_stop_coords_pos = exons_list_sorted.index(exon_stop_coords)
 
         # Sort the exons associated to each transcript
         for key, values in transcripts_dict.items():
-            transcripts_dict[key] = sorted(values, key=lambda x: (x[1], x[0]))
+            if(strand=="+"):
+                transcripts_dict[key] = sorted(values, key=lambda x: (x[1], x[0]))
+            else:
+                transcripts_dict[key] = sorted(values, key=lambda x: (x[1], x[0]), reverse = True)
+
         # # Remove all the transcripts that doesn't include the exon_end
         # # Copy the dictionary for iterating on it
         # transcripts_dict_copy = deepcopy(transcripts_dict)
