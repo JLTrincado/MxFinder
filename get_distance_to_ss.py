@@ -4,6 +4,9 @@
 
 get_distance_to_ss.py: Given the ORFs per transcript (take the longest per transcript),
 the sequences of each transcript and the position of the ss, get the relative distance to this ss
+If the distance returned is 0, that means the stop codon is falling in the final exon and the transcript
+is not going into NMD. If the distance is between 1 and 50, the stop codon is not falling in the last
+exon but is not going to NMD. If its greater than 50, thn it goes to NMD
 """
 
 import logging, sys, os, re
@@ -30,13 +33,13 @@ logger.addHandler(ch)
 def main():
     try:
 
-        orfs_path = sys.argv[1]
-        transcripts_paths = sys.argv[2]
-        output_path = sys.argv[3]
-        #
-        # orfs_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_possible_ORFs_refseq.fa"
-        # transcripts_paths = "/home/shinoda/Desktop/Florida/annotation/MBNL1_possible_transcripts_refseq.fa.paths"
-        # output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_evaluated_refseq.paths"
+        # orfs_path = sys.argv[1]
+        # transcripts_paths = sys.argv[2]
+        # output_path = sys.argv[3]
+
+        orfs_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_possible_ORFs_refseq.fa"
+        transcripts_paths = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_possible_transcripts_refseq.fa.paths"
+        output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_evaluated_refseq.paths"
 
         # 1. Extract just the first ORF (the longest) from each transcript
         outFile = open(orfs_path+".unique", 'w')
@@ -103,15 +106,16 @@ def main():
                                     # pos += length_exon
                                 # Reached stop codon
                                 else:
-                                    offset = second_pos - (pos + length_exon)
-                                    stop_codon = int(coords[1]) + offset
+                                    # offset = second_pos - (pos + length_exon)
+                                    offset = second_pos - pos
+                                    stop_codon = int(coords[0]) + offset
                                     flag_2 = False
                                     flag_3 = True
                                     # pos += length_exon
-                                    if (i == len(exons) - 1):
-                                        distance = pos - second_pos
-                                    else:
-                                        pass
+                                    # if (i == len(exons) - 1):
+                                    #     distance = pos - second_pos
+                                    # else:
+                                    #     pass
                         if (flag_2):
                             # coords = x.split("_")
                             # length_exon = int(coords[1]) - int(coords[0])
@@ -125,21 +129,25 @@ def main():
                                 flag_2 = False
                                 flag_3 = True
                                 # pos += length_exon
-                                # Reached last exon
-                                if (i==len(exons)-1):
-                                    distance = (pos + length_exon) - second_pos
-                                    break
-                                else:
-                                    pass
+                                # If reached last exon, the stop codon is in the last exon. Therefore, there won't be NMD
+                                # if (i==len(exons)-1):
+                                #     # distance = (pos + length_exon) - second_pos
+                                #     distance = 0
+                                #     break
+                                # else:
+                                #     pass
                         if (flag_3):
-                            # Reached last exon
-                            if(i==len(exons)-1):
+                            # If not reached last exon, get the distance to the 3'ss
+                            if(i!=len(exons)-1):
                                 # coords = x.split("_")
                                 # length_exon = int(coords[1]) - int(coords[0])
                                 # pos += length_exon
                                 distance = (pos + length_exon) - second_pos
                                 break
-
+                            # If reached last exon, the stop codon is in the last exon. Therefore, there won't be NMD
+                            else:
+                                distance = 0
+                                break
                         pos += length_exon
                         i += 1
                     results[transcript_id] = [start_codon,stop_codon,distance]
@@ -157,7 +165,8 @@ def main():
                 if(transcript_id in results):
                     info = results[transcript_id]
                     outFile.write(":".join(tokens)+"\tStart_codon: "+str(info[0])+
-                                  "\tStop_codon: "+str(info[1])+"\tDistance: "+str(info[2])+"\n")
+                                  "\tStop_codon: "+str(info[1])+
+                                  "\tDistance: "+str(info[2])+"\n")
                 else:
                     outFile.write(":".join(tokens)+"\tNo ORF\n")
         outFile.close()

@@ -68,8 +68,8 @@ def main():
         # 1. Using the info in the header of the ORFs file, we can obtain the information of
         # whether our stop codon is falling
         results = {}
-        with open(orfs_path) as f:
-            logger.info("Processing ORFs file...")
+        with open(orfs_path + ".unique") as f:
+            logger.info("Processing ORFs unique file...")
             for line in f:
                 # If its header
                 if (re.search(">", line)):
@@ -92,7 +92,7 @@ def main():
                         if (flag_1):
                             # coords = x.split("_")
                             # length_exon = int(coords[1]) - int(coords[0])
-                            if((pos + length_exon) < first_pos):
+                            if ((pos + length_exon) < first_pos):
                                 pass
                                 # pos += length_exon
                             # Reached start codon
@@ -106,15 +106,16 @@ def main():
                                     # pos += length_exon
                                 # Reached stop codon
                                 else:
-                                    offset = second_pos - (pos + length_exon)
-                                    stop_codon = int(coords[1]) + offset
+                                    # offset = second_pos - (pos + length_exon)
+                                    offset = second_pos - pos
+                                    stop_codon = int(coords[0]) + offset
                                     flag_2 = False
                                     flag_3 = True
                                     # pos += length_exon
-                                    if (i == len(exons) - 1):
-                                        distance = pos - second_pos
-                                    else:
-                                        pass
+                                    # if (i == len(exons) - 1):
+                                    #     distance = pos - second_pos
+                                    # else:
+                                    #     pass
                         if (flag_2):
                             # coords = x.split("_")
                             # length_exon = int(coords[1]) - int(coords[0])
@@ -128,29 +129,30 @@ def main():
                                 flag_2 = False
                                 flag_3 = True
                                 # pos += length_exon
-                                # Reached last exon
-                                if (i==len(exons)-1):
-                                    distance = (pos + length_exon) - second_pos
-                                    break
-                                else:
-                                    pass
+                                # If reached last exon, the stop codon is in the last exon. Therefore, there won't be NMD
+                                # if (i==len(exons)-1):
+                                #     # distance = (pos + length_exon) - second_pos
+                                #     distance = 0
+                                #     break
+                                # else:
+                                #     pass
                         if (flag_3):
-                            # Reached last exon
-                            if(i==len(exons)-1):
+                            # If not reached last exon, get the distance to the 3'ss
+                            if (i != len(exons) - 1):
                                 # coords = x.split("_")
                                 # length_exon = int(coords[1]) - int(coords[0])
                                 # pos += length_exon
                                 distance = (pos + length_exon) - second_pos
                                 break
-
+                            # If reached last exon, the stop codon is in the last exon. Therefore, there won't be NMD
+                            else:
+                                distance = 0
+                                break
                         pos += length_exon
                         i += 1
-                    transcript_id_f = transcript_id + "_" + str(coords[2])
-                    length_ORF = stop_codon - start_codon
-                    results[transcript_id_f] = [start_codon,stop_codon,length_ORF,distance]
+                    results[transcript_id] = [start_codon, stop_codon, distance]
                 else:
                     pass
-
 
         # 2. Get the longer transcript that starts with the given start codon
         results_filtered = {}
@@ -176,7 +178,8 @@ def main():
                 if(transcript_id in results_filtered):
                     info = results_filtered[transcript_id]
                     outFile.write(":".join(tokens)+"\tStart_codon: "+str(info[0])+
-                                  "\tStop_codon: "+str(info[1])+"\tDistance: "+str(info[3])+"\n")
+                                  "\tStop_codon: "+str(info[1])+"\tLength_ORF: "+str(info[2])+
+                                  "\tDistance: "+str(info[3])+"\n")
                 else:
                     outFile.write(":".join(tokens)+"\tNo ORF\n")
         outFile.close()
