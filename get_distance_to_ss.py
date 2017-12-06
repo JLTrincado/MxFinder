@@ -33,13 +33,13 @@ logger.addHandler(ch)
 def main():
     try:
 
-        # orfs_path = sys.argv[1]
-        # transcripts_paths = sys.argv[2]
-        # output_path = sys.argv[3]
-
-        orfs_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_ORFs_refseq.fa"
-        transcripts_paths = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_transcripts_refseq.fa.paths"
-        output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_evaluated_refseq.paths"
+        orfs_path = sys.argv[1]
+        transcripts_paths = sys.argv[2]
+        output_path = sys.argv[3]
+        #
+        # orfs_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_ORFs_refseq.fa"
+        # transcripts_paths = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_transcripts_refseq.fa.paths"
+        # output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_evaluated_refseq.paths"
 
         # 1. Extract just the first ORF (the longest) from each transcript
         outFile = open(orfs_path+".unique", 'w')
