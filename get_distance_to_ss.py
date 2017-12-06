@@ -37,9 +37,9 @@ def main():
         # transcripts_paths = sys.argv[2]
         # output_path = sys.argv[3]
 
-        orfs_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_possible_ORFs_refseq.fa"
-        transcripts_paths = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_possible_transcripts_refseq.fa.paths"
-        output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_evaluated_refseq.paths"
+        orfs_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_ORFs_refseq.fa"
+        transcripts_paths = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_possible_transcripts_refseq.fa.paths"
+        output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL3_evaluated_refseq.paths"
 
         # 1. Extract just the first ORF (the longest) from each transcript
         outFile = open(orfs_path+".unique", 'w')
@@ -76,8 +76,9 @@ def main():
                     # Two things: obtain the differences for each exon associated (with the cordinates)
                     # and obtain the length of the ORF
                     tokens = line.rstrip().split(":")
+                    strand = tokens[1]
                     transcript_id = tokens[0][1:]
-                    exons = tokens[1:-1]
+                    exons = tokens[2:-1]
                     ORF = tokens[-1].split("-")
                     # Get the difference for each exon. Go substracting the sequences according to the distance
                     # to the ORF end
@@ -98,7 +99,10 @@ def main():
                             # Reached start codon
                             else:
                                 offset = first_pos - pos
-                                start_codon = int(coords[0]) + offset
+                                if(strand=="+"):
+                                    start_codon = int(coords[0]) + offset
+                                else:
+                                    start_codon = int(coords[1]) - offset
                                 flag_1 = False
                                 flag_2 = True
                                 if ((pos + length_exon) < second_pos):
@@ -108,7 +112,10 @@ def main():
                                 else:
                                     # offset = second_pos - (pos + length_exon)
                                     offset = second_pos - pos
-                                    stop_codon = int(coords[0]) + offset
+                                    if (strand == "+"):
+                                        stop_codon = int(coords[0]) + offset
+                                    else:
+                                        stop_codon = int(coords[1]) - offset
                                     flag_2 = False
                                     flag_3 = True
                                     # pos += length_exon
@@ -125,7 +132,10 @@ def main():
                             # Reached stop codon
                             else:
                                 offset = second_pos - pos
-                                stop_codon = int(coords[0]) + offset
+                                if (strand == "+"):
+                                    stop_codon = int(coords[0]) + offset
+                                else:
+                                    stop_codon = int(coords[1]) - offset
                                 flag_2 = False
                                 flag_3 = True
                                 # pos += length_exon
