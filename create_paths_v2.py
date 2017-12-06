@@ -214,7 +214,7 @@ def main():
         # Save all the combinations of the exons in a separate file
         outFile2 = open(output_path+".paths", 'w')
         for element in paths_list:
-            header_id = ">Transcript_"+str(i)
+            header_id = ">Transcript_"+str(i) + ":" + strand
             outFile2.write(header_id+": "+str(element) + "\n")
             full_seq = ""
             for x in element:
