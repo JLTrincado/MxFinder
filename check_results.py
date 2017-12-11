@@ -38,7 +38,7 @@ def main():
 
         files = glob.glob(path+"/*.paths.sorted")
         outFile = open(output_path, 'w')
-        outFile.write("Gene\tPair_exons\todds_ratio\tp_value\tcontingency_table\n")
+        outFile.write("Gene\tPair_exons\todds_ratio\tp_value\tFDR\tcontingency_table\n")
         for file in files:
             gene = file.split("/")[-1].split("_")[0]
             with open(file) as f:
@@ -48,10 +48,10 @@ def main():
                     #Check if there is any signficant line. If that's the case, output it
                     tokens = line.rstrip().split("\t")
                     if(tokens[2]!="nan"):
-                        p_value = float(tokens[2])
-                        if(p_value<=0.05):
+                        FDR = float(tokens[3])
+                        if(FDR<=0.05):
                             outFile.write(gene+"\t"+"\t".join(tokens)+"\n")
-                        elif(p_value==1.0):
+                        elif(FDR==1.0):
                             break
 
         outFile.close()
