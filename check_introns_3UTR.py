@@ -31,7 +31,7 @@ def main():
 
         gtf_path = sys.argv[1]
         output_path = sys.argv[2]
-        output_path = sys.argv[3]
+        output_path2 = sys.argv[3]
         #
 
         # gtf_path = "/home/shinoda/Desktop/Florida/annotation/refseq_hg19_full.formatted.gtf"
