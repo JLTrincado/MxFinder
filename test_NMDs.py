@@ -11,6 +11,7 @@ of coocurrence with nonNMD. The smaller the odds_ratio the greater the associati
 
 import logging, sys, os, re
 import scipy.stats
+from statsmodels.sandbox.stats.multicomp import multipletests
 from itertools import combinations
 from copy import deepcopy
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -38,8 +39,8 @@ def main():
         paths_file = sys.argv[1]
         output_path = sys.argv[2]
 
-        # paths_file = "/home/shinoda/Desktop/Florida/annotation/MBNL1_evaluated_refseq.paths"
-        # output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_evaluated_p_value_refseq.paths"
+        # paths_file = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_evaluated_refseq.paths"
+        # output_path = "/home/shinoda/Desktop/Florida/annotation/MBNL1_TEST/MBNL1_evaluated_p_value_refseq.paths"
 
         # 1. Get the whole list of exons in the file
         exons_list = [] #list of exons
@@ -64,7 +65,6 @@ def main():
             for line in f:
                 tokens = line.rstrip().split("\t")
                 if(tokens[1]!="No ORF"):
-                    cu = int(re.split('\W+', tokens[3])[1])
                     if(int(re.split('\W+', tokens[3])[1])<50):
                         NMD_flag = False
                     else:
@@ -111,27 +111,47 @@ def main():
                                     exon_counts[x][0][1] += 1
 
 
-        # 3. Get all the combinations between pairs of exons, and do a fisher test
-        outFile = open(output_path, 'w')
+        # 3. Get all the combinations between pairs of exons, and do a fisher test.
+        # Save the p-values for applying an FDR correction
+        outFile = open(output_path+".temp", 'w')
         outFile.write("Pair_exons\todds_ratio\tp_value\tcontingency_table\n")
+        raw_pvals = []
         for key, values in exon_counts.items():
             #Do a fisher test with the associated values
             oddsratio, pvalue = scipy.stats.fisher_exact([values[0],values[1]])
+            raw_pvals.append(pvalue)
             #Output the results
             outFile.write(str(key)+"\t"+str(oddsratio)+"\t"+str(pvalue)+"\t["+
                           str(values[0])+","+str(values[1])+"]\n")
         outFile.close()
 
-        # 4. Sort the output file
+        # 4. Apply the FDR correction and output it in the file
+        _, pvals_corrected, _, _ = multipletests(raw_pvals, method='fdr_bh', alpha=0.05)
+        pvals_corrected_list = pvals_corrected.tolist()
+        outFile = open(output_path, 'w')
+        outFile.write("Pair_exons\todds_ratio\tp_value\tFDR\tcontingency_table\n")
+        cont = 0
+        with open(output_path+".temp") as f:
+            next(f)
+            logger.info("Applying multiple testing correction...")
+            for line in f:
+                tokens = line.rstrip().split("\t")
+                outFile.write(tokens[0]+"\t"+tokens[1]+"\t"+tokens[2]+"\t"+str(pvals_corrected_list[cont])+"\t"+tokens[3]+"\n")
+                cont += 1
+        outFile.close()
+
+        # 5. Sort the output file
         outFile = open(output_path+".sorted", 'w')
         lines = open(output_path, 'r').readlines()[1:]
-        outFile.write("Pair_exons\todds_ratio\tp_value\tcontingency_table\n")
+        outFile.write("Pair_exons\todds_ratio\tp_value\tFDR\tcontingency_table\n")
         for line in sorted(lines, key=lambda line: float(line.split("\t")[2])):
             outFile.write(line)
         outFile.close()
 
-        #Remove the previous file
+        # Remove the auxiliary file
         os.remove(output_path)
+        os.remove(output_path+".temp")
+
 
         logger.info("Saved " + output_path+".sorted")
         logger.info("Done. Exiting program.")
