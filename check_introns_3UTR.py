@@ -130,7 +130,9 @@ def main():
         list_genes_sorted = sorted(list_genes)
         outFile = open(output_path, 'w')
         for x in list_genes_sorted:
-            outFile.write(x+"\n")
+            outFile.write("\""+x+"\""+"\n")
+
+        outFile.close()
         logger.info("Generated "+output_path)
 
         logger.info("Done. Exiting program.")
