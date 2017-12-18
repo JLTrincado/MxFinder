@@ -41,21 +41,26 @@ def main():
 
         logger.info("Starting execution")
 
-        # gtf_path = sys.argv[1]
-        # gene_of_interest = sys.argv[2]
-        # output_path = sys.argv[3]
-        #
-        gtf_path = "/home/shinoda/Desktop/Florida/annotation/refseq_mm10_full.formatted.gtf"
-        gene_of_interest = "Mbnl1"
-        output_path = "/home/shinoda/Desktop/Florida/results/mm10"
+        gtf_path = sys.argv[1]
+        gene_of_interest = sys.argv[2]
+        python2 = sys.argv[3]
+        mosea = sys.argv[4]
+        fast_genome = sys.argv[5]
+        output_path = sys.argv[6]
+
+        # gtf_path = "/home/shinoda/Desktop/Florida/annotation/refseq_mm10_full.formatted.gtf"
+        # gene_of_interest = "Mbnl1"
+        # python2 = "/home/shinoda/miniconda3/envs/python2.7/bin/python2.7"
+        # mosea = "/home/shinoda/Software/MoSEA-master/mosea.py"
+        # fast_genome = "/home/shinoda/Software/MoSEA-master/test_files/genome/mm10.fa"
+        # output_path = "/home/shinoda/Desktop/Florida/results/mm10"
 
         # 1. Obtain the exon coordinates from the GTF. Format it in a bed format
         output_path_aux =  output_path+"/"+gene_of_interest+"_exons.bed"
         format_gtf_refseq(gtf_path, gene_of_interest, output_path_aux)
 
         # 2. Run MoSEA (python2)
-        subprocess.call(['/home/shinoda/miniconda3/envs/python2.7/bin/python2.7', '/home/shinoda/Software/MoSEA-master/mosea.py', 'getfasta',
-                         '--bedfile', output_path_aux,'--genome','/home/shinoda/Software/MoSEA-master/test_files/genome/mm10.fa',
+        subprocess.call([python2, mosea, 'getfasta','--bedfile', output_path_aux,'--genome',fast_genome,
                          '--output',output_path_aux+'.fa'])
 
         # 3. Get all the possible paths with the info given. It returns the fasta sequence associated to each combination
@@ -64,9 +69,9 @@ def main():
 
         # 4. Run extract_orfs (python2)
         output_path_aux3 = output_path+"/"+gene_of_interest+"_possible_ORFs.fa"
+        orfs_scripts_path = os.path.dirname(os.path.abspath(__file__))+"/extract_orfs.py"
         with open(output_path_aux3, "w") as outfile:
-            subprocess.call(['/home/shinoda/miniconda3/envs/python2.7/bin/python2.7', '/home/shinoda/Desktop/Florida/MxFinder/extract_orfs.py',
-                         output_path_aux2,'75'], stdout=outfile)
+            subprocess.call([python2,orfs_scripts_path,output_path_aux2,'75'], stdout=outfile)
         logger.info("Saved "+output_path_aux3)
 
         # 5. Given the ORFs per transcript (take the longest per transcript), the sequences of each transcript and the
