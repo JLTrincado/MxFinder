@@ -46,7 +46,8 @@ def main():
         python2 = sys.argv[3]
         mosea = sys.argv[4]
         fast_genome = sys.argv[5]
-        output_path = sys.argv[6]
+        bedtools = sys.argv[6]
+        output_path = sys.argv[7]
 
         # gtf_path = "/home/shinoda/Desktop/Florida/annotation/refseq_mm10_full.formatted.gtf"
         # gene_of_interest = "Mbnl1"
@@ -61,7 +62,7 @@ def main():
 
         # 2. Run MoSEA (python2)
         subprocess.call([python2, mosea, 'getfasta','--bedfile', output_path_aux,'--genome',fast_genome,
-                         '--output',output_path_aux+'.fa'])
+                         '--bedtoolspath', bedtools, '--output', output_path_aux+'.fa'])
 
         # 3. Get all the possible paths with the info given. It returns the fasta sequence associated to each combination
         output_path_aux2 = output_path+"/"+gene_of_interest+"_possible_transcripts.fa"
