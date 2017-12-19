@@ -22,5 +22,5 @@ python3 MxFinder.py <gtf-file> <gene> <python2-executable> <mosea-path> <genome-
 Here we show an example of execution, with mm10 annotation and a gene (Mbnl1):
 
 ```
-python3 MxFinder.py ~/refseq_mm10_full.formatted.gtf $gene_f ~/python2.7/bin/python2.7 ~/mosea.py ~/mm10.fa ~/bedtools-2.26/bin/bedtools ~/MxFinder_mm10_output
+python3 MxFinder.py ~/refseq_mm10_full.formatted.gtf Mbnl1 ~/python2.7/bin/python2.7 ~/mosea.py ~/mm10.fa ~/bedtools-2.26/bin/bedtools ~/MxFinder_mm10_output
 ```
