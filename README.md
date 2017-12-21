@@ -1,7 +1,7 @@
 # MxFinder
-Testing of mutual exclussion between pairs of exons of NMD
+Testing of mutual exclussion between pairs of exons of nonsense mediated decay (NMD)
 
-MxFinder is a pipeline designed for checking of mutual exclussion between pairs of exons, just relying in an annotated transcript. 
+MxFinder is a pipeline designed for checking of mutual exclussion between pairs of exons at the time of triggering NMD, just relying in an annotated transcriptome.
 
 These are the main scripts of the pipeline:
 
