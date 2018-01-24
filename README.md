@@ -9,7 +9,7 @@ These are the main scripts of the pipeline:
 and transform it to bed file. There is another version available for Ensembl annotation (format_gtf.py)
 - get_fasta.py: from [MoSEA](https://github.com/comprna/MoSEA) software, extract the fasta sequence associated to each exon
 - create_paths.py: get all the possible paths with the info given. It returns the fasta sequence associated to each combination.
-- extract_orfs.py: Get all possible ORFs associated to each sequence
+- extract_orfs.py: Get all possible ORFs associated to each sequence. Written by Dr. Jorge Ruiz-Orera.
 - get_distance_to_ss.py: Given the ORFs per transcript (take the longest per transcript), the sequences of each transcript and the position of the ss, get the relative distance to this ss
 - test_NMDs.py: apply a Fisher test for each pair of exons, in order to test independence between all the exons respect to the NMD condition
 
