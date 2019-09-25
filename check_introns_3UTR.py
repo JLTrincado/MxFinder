@@ -1,3 +1,4 @@
+TEST
 """
 @authors: Juan L. Trincado
 @email: juanluis.trincado@upf.edu
